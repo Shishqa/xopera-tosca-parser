@@ -65,14 +65,17 @@ class PolicyDefinition(CollectorMixin):
         typ = self.type.resolve_reference(service_ast)
         definitions = self.collect_target_definitions(typ)
         assignments = {target.data: target for target in self.get("targets", {})}
-        print('ASSIGNMENTS: ', assignments)
+        if len(assignments) > 0:
+            definitions = assignments
+        print('ASSIGNMENTS: ', definitions)
 
-        duplicate_targets = set(assignments.keys()).intersection(definitions.keys())
-        if duplicate_targets:
-            for duplicate in duplicate_targets:
-                definitions.pop(duplicate)
+        # duplicate_targets = set(assignments.keys()).intersection(definitions.keys())
+        # if duplicate_targets:
+        #     for duplicate in duplicate_targets:
+        #         definitions.pop(duplicate)
 
-        definitions.update(assignments)
+        # definitions.update(assignments)
+        # print('DEFINITIONS: ', definitions)
 
         return {
             name: (assignments.get(name) or definition).resolve_reference(service_ast)
