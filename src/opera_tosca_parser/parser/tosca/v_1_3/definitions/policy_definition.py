@@ -65,6 +65,7 @@ class PolicyDefinition(CollectorMixin):
         typ = self.type.resolve_reference(service_ast)
         definitions = self.collect_target_definitions(typ)
         assignments = {target.data: target for target in self.get("targets", {})}
+        print('ASSIGNMENTS: ', assignments)
 
         duplicate_targets = set(assignments.keys()).intersection(definitions.keys())
         if duplicate_targets:
@@ -109,7 +110,7 @@ class PolicyDefinition(CollectorMixin):
     # the next function is not part of the CollectorMixin because triggers are policy only thing
     def collect_trigger_action_from_interfaces(self, targeted_nodes: Dict[str, Node],
                                                call_operation_name: Optional[str],
-                                               action: Dict[str, Any]) -> Optional[Tuple[str, str, Operation]]:
+                                               action: Dict[str, Any], inputs: Dict[str, Any]) -> Optional[Tuple[str, str, Operation]]:
         """
         Collect TOSCA policy trigger action from TOSCA interfaces
         :param targeted_nodes: Target Node objects from TOSCA template
@@ -130,8 +131,8 @@ class PolicyDefinition(CollectorMixin):
 
                         # update the operation inputs with inputs from trigger's activity definition
                         operation.inputs.update({
-                            k: [s.data for s in v.data]
-                            for k, v in action.get("inputs", {}).items()
+                            k: v
+                            for k, v in inputs.items()
                         })
 
                         collected_action = (interface_name, operation_name, operation)
@@ -205,6 +206,8 @@ class PolicyDefinition(CollectorMixin):
                     self.loc
                 )
             else:
+                inputs = {}
+
                 # collect connected node interface operations
                 call_operation = action.get("call_operation", None)
                 call_operation_name = None
@@ -214,6 +217,7 @@ class PolicyDefinition(CollectorMixin):
                 # handle extended call_operation notation
                 elif isinstance(call_operation.data, dict):
                     call_operation_name = call_operation.data.get("operation", None)
+                    inputs = call_operation.data.get("inputs", None)
                 else:
                     self.abort(
                         f"Invalid call operation activity definition type: {type(call_operation.data)}.", self.loc
@@ -228,7 +232,7 @@ class PolicyDefinition(CollectorMixin):
 
                 # collect actions (interface operations) from targeted nodes
                 collected_action = self.collect_trigger_action_from_interfaces(targeted_nodes, call_operation_name,
-                                                                               action)
+                                                                               action, inputs)
                 if collected_action:
                     actions.append(collected_action)
 
