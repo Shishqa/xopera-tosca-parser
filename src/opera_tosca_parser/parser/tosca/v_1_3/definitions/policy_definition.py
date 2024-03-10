@@ -320,7 +320,7 @@ class PolicyDefinition(CollectorMixin):
         return triggers
 
     def concat(self, params):
-        return "".join([param.eval(self, '') for param in params])
+        return "".join(params)
 
     def get_property(self, params):
         host, prop, *rest = params
