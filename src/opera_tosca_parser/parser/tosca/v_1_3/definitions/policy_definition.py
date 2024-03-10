@@ -4,6 +4,7 @@ from opera_tosca_parser.parser.tosca.v_1_3.template.node import Node
 from opera_tosca_parser.parser.tosca.v_1_3.template.operation import Operation
 from opera_tosca_parser.parser.tosca.v_1_3.template.policy import Policy
 from opera_tosca_parser.parser.tosca.v_1_3.template.trigger import Trigger
+from src.opera_tosca_parser.parser.tosca.v_1_3.value import Value
 from .collector_mixin import CollectorMixin  # type: ignore
 from .policy_type import PolicyType
 from .trigger_definition import TriggerDefinition
@@ -36,10 +37,12 @@ class PolicyDefinition(CollectorMixin):
         # targets will be used also for collecting triggers so retrieve them here only once
         targets = self.collect_targets(service_ast)
 
+        self.collected_properties = self.collect_properties(service_ast)
+
         policy = Policy(
             name=name,
             types=self.collect_types(service_ast),
-            properties=self.collect_properties(service_ast),
+            properties=self.collected_properties,
             targets=self.resolve_targets(targets, nodes),
             triggers=self.collect_triggers(service_ast, targets, nodes)
         )
@@ -134,7 +137,7 @@ class PolicyDefinition(CollectorMixin):
 
                         # update the operation inputs with inputs from trigger's activity definition
                         operation.inputs.update({
-                            k: v
+                            k: Value(None, True, v).eval(self, k)
                             for k, v in inputs.items()
                         })
 
@@ -261,7 +264,7 @@ class PolicyDefinition(CollectorMixin):
 
     # the next function is not part of the CollectorMixin because triggers are policy only thing
     def collect_triggers(self, service_ast: Dict[str, Any], policy_targets: Dict[str, Any],
-                         nodes: Dict[str, Node]) -> Dict[str, Trigger]:
+                         nodes: Dict[str, Node], properties) -> Dict[str, Trigger]:
         """
         Collect TOSCA policy triggers
         :param service_ast: Abstract syntax tree dict
@@ -314,3 +317,14 @@ class PolicyDefinition(CollectorMixin):
             triggers[name] = trigger
 
         return triggers
+
+    def get_property(self, params):
+        host, prop, *rest = params
+
+        if host != 'SELF':
+            raise RuntimeError(f'unknown host: {host}')
+
+        if prop in self.properties:
+            return self.properties[prop].eval(self, prop)
+        else:
+            raise RuntimeError(f'unknown property: {prop}')
