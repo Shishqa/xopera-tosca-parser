@@ -4,7 +4,7 @@ from opera_tosca_parser.parser.tosca.v_1_3.template.node import Node
 from opera_tosca_parser.parser.tosca.v_1_3.template.operation import Operation
 from opera_tosca_parser.parser.tosca.v_1_3.template.policy import Policy
 from opera_tosca_parser.parser.tosca.v_1_3.template.trigger import Trigger
-from src.opera_tosca_parser.parser.tosca.v_1_3.value import Value
+from opera_tosca_parser.parser.tosca.v_1_3.value import Value
 from .collector_mixin import CollectorMixin  # type: ignore
 from .policy_type import PolicyType
 from .trigger_definition import TriggerDefinition
