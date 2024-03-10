@@ -141,9 +141,8 @@ class PolicyDefinition(CollectorMixin):
                             for k, v in inputs.items()
                         }
                         print('EXTRA: ', extra_inputs)
-                        operation.inputs.update(extra_inputs)
 
-                        collected_action = (interface_name, operation_name, operation)
+                        collected_action = (interface_name, operation_name, operation, extra_inputs)
                         break
 
         if actions_found == 0:
