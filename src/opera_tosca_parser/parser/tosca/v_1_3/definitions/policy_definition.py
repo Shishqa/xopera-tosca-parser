@@ -136,10 +136,12 @@ class PolicyDefinition(CollectorMixin):
                         actions_found += 1
 
                         # update the operation inputs with inputs from trigger's activity definition
-                        operation.inputs.update({
+                        extra_inputs = {
                             k: Value(None, True, v).eval(self, k)
                             for k, v in inputs.items()
-                        })
+                        }
+                        print('EXTRA: ', extra_inputs)
+                        operation.inputs.update(extra_inputs)
 
                         collected_action = (interface_name, operation_name, operation)
                         break
