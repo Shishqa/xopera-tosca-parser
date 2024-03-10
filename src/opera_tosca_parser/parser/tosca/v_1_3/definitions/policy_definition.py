@@ -264,7 +264,7 @@ class PolicyDefinition(CollectorMixin):
 
     # the next function is not part of the CollectorMixin because triggers are policy only thing
     def collect_triggers(self, service_ast: Dict[str, Any], policy_targets: Dict[str, Any],
-                         nodes: Dict[str, Node], properties) -> Dict[str, Trigger]:
+                         nodes: Dict[str, Node]) -> Dict[str, Trigger]:
         """
         Collect TOSCA policy triggers
         :param service_ast: Abstract syntax tree dict
@@ -324,7 +324,7 @@ class PolicyDefinition(CollectorMixin):
         if host != 'SELF':
             raise RuntimeError(f'unknown host: {host}')
 
-        if prop in self.properties:
-            return self.properties[prop].eval(self, prop)
+        if prop in self.collected_properties:
+            return self.collected_properties[prop].eval(self, prop)
         else:
-            raise RuntimeError(f'unknown property: {prop}')
+            raise RuntimeError(f'unknown property: {prop} ({list(self.collected_properties.keys())})')
