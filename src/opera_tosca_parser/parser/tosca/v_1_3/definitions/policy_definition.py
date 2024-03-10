@@ -137,7 +137,7 @@ class PolicyDefinition(CollectorMixin):
 
                         # update the operation inputs with inputs from trigger's activity definition
                         extra_inputs = {
-                            k: Value(None, True, v).eval(self, k)
+                            k: Value(None, True, Value(None, True, v).eval(self, k))
                             for k, v in inputs.items()
                         }
                         print('EXTRA: ', extra_inputs)
