@@ -145,11 +145,11 @@ class PolicyDefinition(CollectorMixin):
                 f"within this interface). The node that you're targeting with interface operation also has to be used "
                 f"in topology_template/node_templates section", self.loc
             )
-        elif actions_found > 1:
-            self.abort(
-                f"Found duplicated trigger actions: {call_operation_name} from call_operation. It seems that the "
-                f"operation with the same name belongs to two different node types/templates.", self.loc
-            )
+        # elif actions_found > 1:
+        #     self.abort(
+        #         f"Found duplicated trigger actions: {call_operation_name} from call_operation. It seems that the "
+        #         f"operation with the same name belongs to two different node types/templates.", self.loc
+        #     )
 
         return collected_action
 
