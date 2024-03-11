@@ -70,7 +70,7 @@ class PolicyDefinition(CollectorMixin):
         assignments = {target.data: target for target in self.get("targets", {})}
         if len(assignments) > 0:
             definitions = assignments
-        print('ASSIGNMENTS: ', definitions)
+        # print('ASSIGNMENTS: ', definitions)
 
         # duplicate_targets = set(assignments.keys()).intersection(definitions.keys())
         # if duplicate_targets:
@@ -140,7 +140,7 @@ class PolicyDefinition(CollectorMixin):
                             k: Value(None, True, Value(None, True, v).eval(self, k))
                             for k, v in inputs.items()
                         }
-                        print('EXTRA: ', extra_inputs)
+                        # print('EXTRA: ', extra_inputs)
 
                         collected_action = (interface_name, operation_name, operation, extra_inputs)
                         break
